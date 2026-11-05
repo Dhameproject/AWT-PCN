@@ -61,7 +61,7 @@ header .btn.ghost:first-child{margin-left:0}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}.ov[hidden]{display:none}
 .dlg{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px;max-width:400px;width:100%}
 .cap{display:inline-block;font:700 22px/1 "Courier New",monospace;letter-spacing:.25em;padding:10px 16px;margin:6px 0 10px;border:1px dashed var(--l30);border-radius:8px;color:var(--l30);background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(217,45,32,.08) 6px 12px);user-select:none;-webkit-user-select:none}
-.dlg input[type=text]{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font:15px inherit;font-family:inherit}
+.dlg input[type=password],.dlg input[type=text]{width:100%;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font:15px inherit;font-family:inherit}
 .dact{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.dact .btn{margin:0!important}
 #msg{color:var(--l30);font-size:13px;margin-bottom:10px}
 .db{display:grid;grid-template-columns:3fr 2fr;gap:12px;margin-bottom:12px}
@@ -117,6 +117,11 @@ textarea.rs:hover{border-color:var(--mut)}textarea.rs:focus{outline:2px solid va
 td.rwrap{white-space:normal;min-width:220px}
 select.rcs{font-size:12.5px;padding:5px 7px;max-width:220px}
 @media(max-width:700px){.rbr{grid-template-columns:1fr auto}.rbr .rbt{grid-column:1/-1;order:3}}
+#cst{font-size:12px;margin-top:2px}
+#pinb .dot{margin-right:6px}
+textarea.rs[readonly]{cursor:pointer;background:transparent}
+textarea.rs.ok{border-color:var(--ok);border-style:solid}
+textarea.rs.er{border-color:var(--l30);border-style:solid}
 svg text{fill:var(--mut);font-size:11px;font-family:inherit}
 @media(max-width:700px){.hero,.two{grid-template-columns:1fr}.big{font-size:44px}}
 </style>
@@ -124,8 +129,8 @@ svg text{fill:var(--mut);font-size:11px;font-family:inherit}
 <body>
 <main>
 <header>
- <div><h1>Dashboard Report AWT</h1><div class="sub" id="meta"></div></div>
- <div><button class="btn ghost" id="tp" hidden>Unduh template</button><button class="btn ghost" id="rs">Reset data</button><button class="btn ghost dl" id="da">Hapus semua data</button></div>
+ <div><h1>Dashboard Report AWT</h1><div class="sub" id="meta"></div><div class="sub" id="cst"></div></div>
+ <div><button class="btn ghost" id="pinb" type="button" hidden></button><button class="btn ghost" id="tp" hidden>Unduh template</button><button class="btn ghost" id="rs">Reset data</button><button class="btn ghost dl" id="da">Hapus semua data</button></div>
 </header>
 <section class="db" aria-label="Database">
  <div class="drop" id="drop" tabindex="0" role="button" aria-describedby="dropd"><input type="file" id="file" accept=".xlsx,.xls,.xlsm" multiple hidden>
@@ -149,8 +154,16 @@ svg text{fill:var(--mut);font-size:11px;font-family:inherit}
 <div id="outLate" hidden></div>
 <div id="outRsn" hidden></div>
 </main>
-<div class="ov" id="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dt1"><div class="dlg"><h2 id="dt1" style="color:var(--l30)">Hapus semua data?</h2><p class="lbl" style="margin:0 0 6px">Semua data yang sudah diunggah (Report AWT dan Nota Penjualan), termasuk yang tersimpan di browser ini, akan dihapus dan tidak bisa dikembalikan. Untuk melanjutkan, ketik kata di bawah ini.</p><div class="cap" aria-hidden="true">Hapus</div><input type="text" id="dci" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ketik: Hapus" aria-label="Ketik kata Hapus untuk konfirmasi"><div class="dact"><button class="btn ghost" id="dcn" type="button">Batal</button><button class="btn danger" id="dok" type="button" disabled>Hapus semua data</button></div></div></div>
+<div class="ov" id="dlg" hidden role="dialog" aria-modal="true" aria-labelledby="dt1"><div class="dlg"><h2 id="dt1" style="color:var(--l30)">Hapus semua data?</h2><p class="lbl" style="margin:0 0 6px">Semua data yang sudah diunggah (Report AWT, Nota Penjualan, Reason), termasuk yang tersimpan di browser ini <span class="cloudonly">dan di database online untuk semua komputer</span>, akan dihapus dan tidak bisa dikembalikan. Untuk melanjutkan, ketik kata di bawah ini.</p><div class="cap" aria-hidden="true">Hapus</div><input type="text" id="dci" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ketik: Hapus" aria-label="Ketik kata Hapus untuk konfirmasi"><div class="dact"><button class="btn ghost" id="dcn" type="button">Batal</button><button class="btn danger" id="dok" type="button" disabled>Hapus semua data</button></div></div></div>
+<div class="ov" id="pdlg" hidden role="dialog" aria-modal="true" aria-labelledby="pt1"><div class="dlg"><h2 id="pt1">Masukkan PIN edit</h2><p class="lbl" id="pmsg" style="margin:0 0 10px">PIN diperlukan untuk upload data dan mengisi Reason.</p><input type="password" id="pin" autocomplete="off" placeholder="PIN" aria-label="PIN edit"><label class="lbl" style="display:flex;gap:6px;align-items:center;margin-top:10px;cursor:pointer"><input type="checkbox" id="prem" checked> Ingat PIN di komputer ini</label><div id="perr" class="lbl" style="color:var(--l30);min-height:18px;margin-top:6px"></div><div class="dact"><button class="btn ghost" id="pcn" type="button">Batal</button><button class="btn" id="pok" type="button">Masuk</button></div></div></div>
 <script>
+// =====================================================================
+// DATABASE ONLINE (Supabase) — isi 2 baris ini agar semua komputer melihat data yang sama.
+// Kosongkan ("") untuk memakai mode lokal (data hanya tersimpan di browser masing-masing).
+var SB_URL = "https://ixogzttfzeudyhtqndut.supabase.co";   // Project URL, contoh: "https://abcdefghijklmnop.supabase.co"
+var SB_KEY = "sb_publishable_KiSRfZUjVh1jW2kai0O0_Q_ZWn4oXT_";   // Publishable key (sb_publishable_...) atau anon public key (eyJ...)
+// =====================================================================
+var CLOUD = !!(SB_URL && SB_KEY);
 // [tanggal, tipe, tinting, totalNP, sellTotal, sellOntime, sellL10, sellL30, whTotal, whOntime, whL10, whL30]
 var D=[["2026-11-01","Cash&Carry via Gudang Store","NO",20,1,1,0,0,19,19,0,0],["2026-11-01","Cash&Carry via Pickup & Delivery","NO",47,45,45,0,0,2,2,0,0],["2026-11-01","Cash&Carry via Pickup & Delivery","YES",72,72,70,0,2,0,0,0,0],["2026-11-02","Cash&Carry via Gudang Store","NO",17,0,0,0,0,17,16,1,0],["2026-11-02","Cash&Carry via Pickup & Delivery","NO",29,29,29,0,0,0,0,0,0],["2026-11-02","Cash&Carry via Pickup & Delivery","YES",69,69,68,0,1,0,0,0,0],["2026-11-03","Cash&Carry via Gudang Store","NO",18,3,3,0,0,15,14,1,0],["2026-11-03","Cash&Carry via Pickup & Delivery","NO",46,45,45,0,0,1,1,0,0],["2026-11-03","Cash&Carry via Pickup & Delivery","YES",69,69,68,0,1,0,0,0,0],["2026-11-04","Cash&Carry via Gudang Store","NO",17,3,3,0,0,14,14,0,0],["2026-11-04","Cash&Carry via Pickup & Delivery","NO",33,30,30,0,0,3,3,0,0],["2026-11-04","Cash&Carry via Pickup & Delivery","YES",46,46,46,0,0,0,0,0,0]];
 var META={site:"10005 – MITRA10 PERCETAKAN NEGARA",rm:"LANGKAYANA",info:"Order 1–4 Nov 2026 · Reg 1"};
@@ -416,7 +429,7 @@ $("vr").addEventListener("click",function(e){
  if(e.target.id==="vdl"&&VREP){try{var base=String(VREP.file).replace(/\.[^.]+$/,"");saveWB(vReportWB(VREP),"Validasi_"+base+".xlsx","Laporan validasi diunduh.")}catch(err){$("msg").style.color="";$("msg").textContent="Gagal membuat laporan: "+err.message}}
 });
 
-var rb=$("rs"),rt=0;rb.addEventListener("click",function(){if(!rt){rt=1;rb.textContent="Klik lagi untuk reset";setTimeout(function(){rt=0;rb.textContent="Reset data"},3000);return}rt=0;rb.textContent="Reset data";D=DEF.slice();META=Object.assign({},DEFMETA);SITES=Object.assign({},DEFSITES);NOTA=JSON.parse(JSON.stringify(NOTA_DEF));LOPEN={};try{localStorage.removeItem("awt_data");localStorage.removeItem("awt_nota")}catch(e){}$("msg").style.color="var(--ok)";$("msg").textContent="Data dikembalikan ke data awal.";showVR(null);setup()});
+var rb=$("rs"),rt=0;rb.addEventListener("click",function(){if(CLOUD){cloudLoad(true,"Data dimuat ulang dari database online.");return}if(!rt){rt=1;rb.textContent="Klik lagi untuk reset";setTimeout(function(){rt=0;rb.textContent="Reset data"},3000);return}rt=0;rb.textContent="Reset data";D=DEF.slice();META=Object.assign({},DEFMETA);SITES=Object.assign({},DEFSITES);NOTA=JSON.parse(JSON.stringify(NOTA_DEF));LOPEN={};try{localStorage.removeItem("awt_data");localStorage.removeItem("awt_nota")}catch(e){}$("msg").style.color="var(--ok)";$("msg").textContent="Data dikembalikan ke data awal.";showVR(null);setup()});
 (function(){
  var tp=$("tp");tp.hidden=false;
  tp.addEventListener("click",function(){
@@ -442,7 +455,7 @@ dlg.addEventListener("click",function(e){if(e.target===dlg)closeD()});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!dlg.hidden)closeD()});
 dci.addEventListener("input",function(){dok.disabled=dci.value.trim()!=="Hapus"});
 dci.addEventListener("keydown",function(e){if(e.key==="Enter"&&!dok.disabled)dok.click()});
-dok.addEventListener("click",function(){if(dci.value.trim()!=="Hapus")return;D=[];META={site:"",rm:"",info:""};SITES={};NOTA={np:[],late:[],sites:{},info:""};LOPEN={};REASON={};RCAT={};try{localStorage.removeItem("awt_reason");localStorage.removeItem("awt_rcat");localStorage.setItem("awt_data",JSON.stringify({empty:true}));localStorage.setItem("awt_nota",JSON.stringify({empty:true}))}catch(x){}closeD();$("msg").style.color="var(--ok)";$("msg").textContent="Semua data telah dihapus.";setup()});
+dok.addEventListener("click",function(){if(dci.value.trim()!=="Hapus")return;if(CLOUD){if(!EDIT){closeD();askPin("Masukkan PIN untuk menghapus data.");return}dok.disabled=true;rpc("clear_all",{}).then(function(){closeD();PENDR={};return cloudLoad(true,"Semua data di database online telah dihapus.")}).catch(function(err){dok.disabled=false;closeD();$("msg").style.color="";$("msg").textContent="Gagal menghapus: "+err.message});return}D=[];META={site:"",rm:"",info:""};SITES={};NOTA={np:[],late:[],sites:{},info:""};LOPEN={};REASON={};RCAT={};try{localStorage.removeItem("awt_reason");localStorage.removeItem("awt_rcat");localStorage.setItem("awt_data",JSON.stringify({empty:true}));localStorage.setItem("awt_nota",JSON.stringify({empty:true}))}catch(x){}closeD();$("msg").style.color="var(--ok)";$("msg").textContent="Semua data telah dihapus.";setup()});
 // ===== Tab Detail Late (sumber: Nota Penjualan) =====
 // NOTA.np   : semua NP  -> [site, tanggal, tipe, area, statusKode, tinting, noNP]
 // NOTA.late : NP yang Late, lengkap dengan waktu proses dan item-itemnya
@@ -535,7 +548,7 @@ function renderLate(){
  var a1=$("f1").value,a2=$("f2").value,per=a1&&a2?(fd(a1)+(a1===a2?"":" – "+fd(a2))+" "+a2.slice(0,4)):"";
  var tb='';L.slice().sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:(b.min||0)-(a.min||0)}).forEach(function(x,i){
   var it=x.items.map(function(v){return '<div>'+(v.no?esc(v.no)+' - ':'')+esc(v.ds)+' - <span style="white-space:nowrap">'+esc(v.q)+(v.u?' '+esc(v.u):'')+'</span></div>'}).join(""),rv=REASON[x.np]||"";
-  tb+='<tr><td>'+(i+1)+'</td><td class="l">'+fd(x.date)+'</td><td class="l npc">'+esc(x.np)+(x.cu?' - '+esc(x.cu.replace(/\s+/g," ").trim()):'')+'</td><td class="l">'+esc(short(x.type))+'</td><td class="l">'+esc(x.area)+'</td><td class="l">'+(x.tint==="YES"?"Tinting":"Non Tinting")+'</td><td class="l"><span class="pill '+(x.st==="L30"?"bad":"warn")+'">'+(x.st==="L30"?"&gt;30 mnt":"&gt;10 mnt")+'</span></td><td>'+esc((x.paid||"-").slice(0,5))+'</td><td>'+esc((x.rda||x.rdy||"-").slice(0,5))+'</td><td><b>'+mf(x.min)+'</b></td><td class="l itm">'+it+'</td><td class="l rsn"><textarea class="rs" rows="1" data-np="'+esc(x.np)+'" placeholder="Tulis reason…" aria-label="Reason untuk NP '+esc(x.np)+'">'+esc(rv)+'</textarea></td></tr>'});
+  tb+='<tr><td>'+(i+1)+'</td><td class="l">'+fd(x.date)+'</td><td class="l npc">'+esc(x.np)+(x.cu?' - '+esc(x.cu.replace(/\s+/g," ").trim()):'')+'</td><td class="l">'+esc(short(x.type))+'</td><td class="l">'+esc(x.area)+'</td><td class="l">'+(x.tint==="YES"?"Tinting":"Non Tinting")+'</td><td class="l"><span class="pill '+(x.st==="L30"?"bad":"warn")+'">'+(x.st==="L30"?"&gt;30 mnt":"&gt;10 mnt")+'</span></td><td>'+esc((x.paid||"-").slice(0,5))+'</td><td>'+esc((x.rda||x.rdy||"-").slice(0,5))+'</td><td><b>'+mf(x.min)+'</b></td><td class="l itm">'+it+'</td><td class="l rsn"><textarea class="rs" rows="1" data-np="'+esc(x.np)+'"'+RSATTR().replace(/ readonly/,"")+' aria-label="Reason untuk NP '+esc(x.np)+'"'+RSATTR().replace(/ placeholder="[^"]*"/,"")+'>'+esc(rv)+'</textarea></td></tr>'});
  h+='<div class="card" id="lsnap"><div class="dh"><div><h2>Daftar NP Late</h2><div class="lbl">'+esc(site1)+(per?' · '+per:'')+' · '+L.length+' NP ('+cnt.L10+' telat &gt;10 mnt, '+cnt.L30+' telat &gt;30 mnt)</div></div><button class="btn ghost noshot" id="npng" type="button">Unduh gambar tabel</button></div>'
   +'<div class="scroll"><table class="snap"><thead><tr><th>No</th><th class="l">Tanggal</th><th class="l">No NP - Customer Name</th><th class="l">Tipe NP</th><th class="l">Area</th><th class="l">Jenis</th><th class="l">Status</th><th>Bayar</th><th>Ready</th><th>Durasi (mnt)</th><th class="l">Item</th><th class="l">Reason</th></tr></thead><tbody>'+tb+'</tbody></table></div>'
   +'<p class="lbl" style="margin:8px 0 0;font-size:12px">Durasi = waktu dari bayar (Time Paid) sampai ready (Time Ready Actual), sumber Nota Penjualan.<span class="noshot"> Reason tersimpan otomatis di browser ini dan ikut di file Excel Detail Late.</span></p></div>';
@@ -594,7 +607,7 @@ $("outLate").addEventListener("click",function(e){var t=e.target.closest("button
  if(t.id==="nall"){var ok=nf(),L=NOTA.late.filter(function(x){return ok(x.site,x.date,x.type,x.tint)}),all=L.every(function(x){return LOPEN[x.np]});L.forEach(function(x){LOPEN[x.np]=!all});renderLate();return}
  if(t.classList.contains("tg")){var k=t.getAttribute("data-np");LOPEN[k]=!LOPEN[k];renderLate()}});
 function rsz(el){el.style.height="auto";el.style.height=el.scrollHeight+2+"px"}
-$("outLate").addEventListener("input",function(e){var t=e.target;if(!t.classList||!t.classList.contains("rs"))return;var k=t.getAttribute("data-np"),v=t.value;if(v.trim())REASON[k]=v;else delete REASON[k];rsave();rsz(t)});
+$("outLate").addEventListener("input",function(e){var t=e.target;if(!t.classList||!t.classList.contains("rs"))return;var k=t.getAttribute("data-np"),v=t.value;if(v.trim())REASON[k]=v;else delete REASON[k];rsave();rsz(t);if(CLOUD&&EDIT)queueReason(k,v,t)});
 
 function tabUI(){var b=$("tabs").querySelectorAll("button[data-t]");for(var i=0;i<b.length;i++){var on=b[i].getAttribute("data-t")===TAB;b[i].className=on?"on":"";b[i].setAttribute("aria-selected",on)}
  var ft=$("fnl");if(ft)ft.hidden=TAB!=="late"}
@@ -613,9 +626,11 @@ function doAWT(wb,fname){
  if(res.fatal)return{ok:false,t:fname+": gagal – "+res.fatal+" Unduh laporan validasi di bawah."};
  var nd=res.nd;if(!nd.length)return{ok:false,t:fname+": tidak ada baris data yang valid."};
  var keys={},upd=0;D.forEach(function(r){keys[rk(r)]=1});nd.forEach(function(r){if(keys[rk(r)])upd++});D=mergeD(D,nd);META={site:res.site,rm:res.rm,info:res.info};save();
+ if(CLOUD){var ss={};nd.forEach(function(r){ss[r[12]]=SITES[r[12]]||""});OPS.push(["save_awt",{p_rows:nd,p_sites:ss,p_meta:META}])}
  var V=vCount(res);return{ok:true,warn:V.any,t:fname+" (Report AWT): "+(nd.length-upd)+" baris baru, "+upd+" diperbarui"+(V.any?" – ada yang tidak cocok, lihat hasil cek":"")}}
 function doNota(wb,fname){var res=parseNota(wb),nb={};NOTA.np.forEach(function(x){nb[x[6]]=1});var nw=res.np.filter(function(x){return !nb[x[6]]}).length;
  NOTA=nmerge(NOTA,res);Object.keys(res.sites).forEach(function(k){if(!SITES[k])SITES[k]=res.sites[k]});nsave();
+ if(CLOUD)OPS.push(["save_nota",{p_np:res.np,p_late:res.late,p_sites:res.sites,p_info:res.info}]);
  return{ok:true,t:fname+" (Nota Penjualan): "+res.np.length+" NP dibaca, "+nw+" baru, "+res.late.length+" NP Late"}}
 function dbName(){var s=Object.keys(SITES),d=new Date();return"Database_AWT_"+(s.length===1?s[0]+"_":"")+d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())+".xlsx"}
 function rcount(){return Object.keys(REASON).filter(function(k){return String(REASON[k]).trim()}).length}
@@ -637,12 +652,13 @@ function doDB(wb,fname){
  var dd=[];rows("AWT").forEach(function(r){var d=toISO(r["NP Date"]),s=S(r["Site ID"]);if(!d||!s)return;dd.push([d,S(r["NP Type"]),S(r["TINTING"]).toUpperCase(),N(r["Total NP"]),N(r["Selling Total"]),N(r["Selling Ontime"]),N(r["Selling Late >10"]),N(r["Selling Late >30"]),N(r["WH Total"]),N(r["WH Ontime"]),N(r["WH Late >10"]),N(r["WH Late >30"]),s])});
  var np=[];rows("Nota NP").forEach(function(r){var d=toISO(r["NP Date"]),k=S(r["No NP"]);if(!d||!k)return;np.push([S(r["Site ID"]),d,S(r["NP Type"]),S(r["Area"]),scode(S(r["NP Status"])),S(r["Tinting"]).toUpperCase()==="YES"?"YES":"NO",k])});
  var items={};rows("Item Late").forEach(function(r){var k=S(r["No NP"]);if(!k)return;(items[k]=items[k]||[]).push({no:S(r["Item No"]),cat:S(r["Item Category"]),ds:S(r["Description"]),q:r["Quantity"],u:S(r["Unit"]),ar:S(r["Picking Area"]),loc:S(r["Suggest Location"]),sl:S(r["Status Late By Item"])})});
- var late=[],rs=0;rows("NP Late").forEach(function(r){var k=S(r["No NP"]),d=toISO(r["NP Date"]);if(!k||!d)return;var st=scode(S(r["NP Status"]));if(st!=="L10"&&st!=="L30")return;
+ var late=[],rs=0,RIT=[];rows("NP Late").forEach(function(r){var k=S(r["No NP"]),d=toISO(r["NP Date"]);if(!k||!d)return;var st=scode(S(r["NP Status"]));if(st!=="L10"&&st!=="L30")return;
   var x={np:k,site:S(r["Site ID"]),date:d,type:S(r["NP Type"]),area:S(r["Area"]),st:st,stRaw:S(r["NP Status"]),tint:S(r["Tinting"]).toUpperCase()==="YES"?"YES":"NO",rc:S(r["Receipt No"]),cu:S(r["Customer Name"]),sp:S(r["Salesperson Code"]),ss:S(r["Status Nota"]),
    pay:tstr(r["Payment Time"]),paid:tstr(r["Time Paid"]),prog:tstr(r["Time Progress"]),rdy:tstr(r["Time Ready"]),rda:tstr(r["Time Ready Actual"]),cls:tstr(r["Time Closed"]),min:r["Durasi (mnt)"]===""?null:+r["Durasi (mnt)"],items:items[k]||[]};
   x.wait=mdiff(x.paid,x.prog);x.proc=mdiff(x.prog,x.rda||x.rdy);late.push(x);
-  var rv=S(r["Reason"]);if(rv){REASON[k]=rv;rs++}var kc=S(r["Kategori Reason (manual)"]);if(kc){RCAT[k]=kc}});
+  var rv=S(r["Reason"]);if(rv){REASON[k]=rv;rs++}var kc=S(r["Kategori Reason (manual)"]);if(kc){RCAT[k]=kc}if(rv||kc)RIT.push({np:k,reason:rv,category:kc})});
  if(!dd.length&&!np.length&&!late.length)return{ok:false,t:fname+": file Database kosong."};
+ if(CLOUD){var ts={};Object.keys(SITES).forEach(function(k){ts[k]=SITES[k]});if(dd.length)OPS.push(["save_awt",{p_rows:dd,p_sites:ts,p_meta:{site:"",rm:S(info["RM"]),info:S(info["Info AWT"])}}]);if(np.length||late.length)OPS.push(["save_nota",{p_np:np,p_late:late,p_sites:ts,p_info:S(info["Info Nota"])}]);if(RIT.length)OPS.push(["save_reasons",{p_items:RIT}])}
  if(dd.length){D=mergeD(D,dd);if(!META.rm)META.rm=S(info["RM"]);if(!META.info)META.info=S(info["Info AWT"]);save()}
  if(np.length||late.length){NOTA=nmerge(NOTA,{np:np,late:late,sites:{},info:S(info["Info Nota"])});nsave()}
  rsave();rcsave();
@@ -650,6 +666,8 @@ function doDB(wb,fname){
 function readFile(f){return new Promise(function(ok,no){var rd=new FileReader();rd.onload=function(){ok(rd.result)};rd.onerror=function(){no(new Error("file tidak bisa dibaca"))};rd.readAsArrayBuffer(f)})}
 function handleFiles(list){
  var fs=[].slice.call(list||[]);if(!fs.length)return;
+ if(CLOUD&&!EDIT){PENDF=fs;askPin("Masukkan PIN untuk upload data.",function(){var f=PENDF;PENDF=null;if(f)handleFiles(f)});return}
+ OPS=[];
  var bad=fs.filter(function(f){return !/\.(xlsx|xls|xlsm)$/i.test(f.name)});fs=fs.filter(function(f){return /\.(xlsx|xls|xlsm)$/i.test(f.name)});
  var out=bad.map(function(f){return{ok:false,t:f.name+": bukan file Excel (.xlsx/.xls)"}});
  $("msg").style.color="var(--mut)";$("msg").textContent="Membaca "+fs.length+" file…";showVR(null);$("drop").classList.add("busy");
@@ -661,13 +679,16 @@ function handleFiles(list){
   $("drop").classList.remove("busy");setup();
   var allok=out.every(function(o){return o.ok}),anyok=out.some(function(o){return o.ok}),warn=out.some(function(o){return o.warn});
   $("msg").style.color=!anyok?"":(!allok||warn)?"var(--l10)":"var(--ok)";
-  $("msg").innerHTML=out.map(function(o){return(o.ok?"✓ ":"✕ ")+esc(o.t)}).join("<br>")});
+  $("msg").innerHTML=out.map(function(o){return(o.ok?"✓ ":"✕ ")+esc(o.t)}).join("<br>");
+  if(CLOUD&&OPS.length)flushOps().then(function(){$("msg").innerHTML+="<br>☁ Tersimpan ke database online. Komputer lain akan melihat data ini.";return cloudLoad(true)})
+   .catch(function(err){$("msg").style.color="";$("msg").innerHTML+="<br>✕ Gagal menyimpan ke database online: "+esc(err.message)+". Data belum terkirim, coba upload lagi.";cloudLoad(true)});
+ });
 }
 function updDB(){var el=$("dbst");if(el)el.textContent=n(D.length)+" baris AWT · "+n(NOTA.np.length)+" NP · "+n(NOTA.late.length)+" NP Late · "+n(rcount())+" Reason"}
 (function(){
  var drop=$("drop"),inp=$("file"),dl=$("dbdl"),depth=0;
- drop.addEventListener("click",function(e){if(e.target!==inp)inp.click()});
- drop.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();inp.click()}});
+ drop.addEventListener("click",function(e){if(e.target===inp)return;if(CLOUD&&!EDIT){askPin("Masukkan PIN untuk upload data. Setelah itu, klik atau tarik file ke kotak upload.");return}inp.click()});
+ drop.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();drop.click()}});
  inp.addEventListener("click",function(e){e.stopPropagation()});
  inp.addEventListener("change",function(){handleFiles(inp.files);inp.value=""});
  var hasFiles=function(e){var t=e.dataTransfer&&e.dataTransfer.types;return t&&[].indexOf.call(t,"Files")>=0};
@@ -745,7 +766,7 @@ function renderReason(){
  if(rep.length)h+='<div class="card"><h2>Reason yang berulang</h2><div class="scroll"><table><thead><tr><th class="l">Reason</th><th class="l">Kategori</th><th>Jumlah NP</th></tr></thead><tbody>'+rep.map(function(o){return'<tr><td class="l">'+esc(o.t)+'</td><td class="l">'+esc(o.c)+'</td><td><b>'+o.n+'</b></td></tr>'}).join("")+'</tbody></table></div></div>';
  // reason per NP + koreksi kategori
  var opts=function(np){var a=autoCat(rtext(np)),cur=RCAT[np]||"";return'<option value=""'+(cur?"":" selected")+'>Otomatis: '+esc(a)+'</option>'+RCATS.concat([RLAIN]).map(function(c){return'<option value="'+esc(c[0])+'"'+(cur===c[0]?" selected":"")+'>'+esc(c[0])+'</option>'}).join("")};
- var rr=F.map(function(x){return'<tr><td class="l">'+fd(x.date)+'</td><td class="l">'+esc(x.np)+(x.cu?' - '+esc(x.cu.replace(/\s+/g," ").trim()):'')+'</td><td class="l">'+esc(x.area)+' · '+(x.tint==="YES"?"Tinting":"Non Tinting")+'</td><td class="l"><span class="pill '+(x.st==="L30"?"bad":"warn")+'">'+(x.st==="L30"?"&gt;30 mnt":"&gt;10 mnt")+'</span></td><td><b>'+mf(x.min)+'</b></td><td class="l rwrap">'+esc(rtext(x.np))+'</td><td class="l"><select class="rcs" data-np="'+esc(x.np)+'" aria-label="Kategori reason NP '+esc(x.np)+'">'+opts(x.np)+'</select></td></tr>'}).join("");
+ var rr=F.map(function(x){return'<tr><td class="l">'+fd(x.date)+'</td><td class="l">'+esc(x.np)+(x.cu?' - '+esc(x.cu.replace(/\s+/g," ").trim()):'')+'</td><td class="l">'+esc(x.area)+' · '+(x.tint==="YES"?"Tinting":"Non Tinting")+'</td><td class="l"><span class="pill '+(x.st==="L30"?"bad":"warn")+'">'+(x.st==="L30"?"&gt;30 mnt":"&gt;10 mnt")+'</span></td><td><b>'+mf(x.min)+'</b></td><td class="l rwrap">'+esc(rtext(x.np))+'</td><td class="l"><select class="rcs" data-np="'+esc(x.np)+'"'+(CLOUD&&!EDIT?' disabled title="Masukkan PIN untuk mengubah kategori"':'')+' aria-label="Kategori reason NP '+esc(x.np)+'">'+opts(x.np)+'</select></td></tr>'}).join("");
  h+='<div class="card"><h2>Reason per NP</h2><p class="lbl" style="margin:-4px 0 10px">Kategori dipilih otomatis dari kata kunci. Kalau kurang tepat, ganti di kolom Kategori. Pilihan Anda tersimpan dan ikut di file database.</p><div class="scroll"><table><thead><tr><th class="l">Tanggal</th><th class="l">No NP - Customer Name</th><th class="l">Area · Jenis</th><th class="l">Status</th><th>Durasi (mnt)</th><th class="l">Reason</th><th class="l">Kategori</th></tr></thead><tbody>'+rr+'</tbody></table></div></div>';
  if(M.length)h+='<div class="card"><div class="dh"><h2>Belum ada Reason ('+M.length+' NP)</h2><button class="btn ghost" type="button" data-go="late">Isi di Detail Late</button></div><div class="scroll"><table><thead><tr><th class="l">Tanggal</th><th class="l">No NP - Customer Name</th><th class="l">Area · Jenis</th><th class="l">Status</th><th>Durasi (mnt)</th></tr></thead><tbody>'+M.map(function(x){return'<tr><td class="l">'+fd(x.date)+'</td><td class="l">'+esc(x.np)+(x.cu?' - '+esc(x.cu.replace(/\s+/g," ").trim()):'')+'</td><td class="l">'+esc(x.area)+' · '+(x.tint==="YES"?"Tinting":"Non Tinting")+'</td><td class="l"><span class="pill '+(x.st==="L30"?"bad":"warn")+'">'+(x.st==="L30"?"&gt;30 mnt":"&gt;10 mnt")+'</span></td><td>'+mf(x.min)+'</td></tr>'}).join("")+'</tbody></table></div></div>';
  el.innerHTML=h;
@@ -759,11 +780,87 @@ function rsnWB(){var R=rsnData(),wb=XLSX.utils.book_new();
  R.L.forEach(function(x){var r=rtext(x.np);b.push([x.date,x.np,x.cu,x.type,x.area,x.tint==="YES"?"Tinting":"Non Tinting",SLBL[x.st],x.min==null?"":x.min,r||"(belum ada)",r?catOf(x.np):"",r?(RCAT[x.np]?"Manual":"Otomatis"):""])});
  var w2=XLSX.utils.aoa_to_sheet(b);w2["!cols"]=[{wch:11},{wch:20},{wch:24},{wch:32},{wch:9},{wch:11},{wch:15},{wch:12},{wch:50},{wch:22},{wch:14}];w2["!autofilter"]={ref:"A1:K"+b.length};XLSX.utils.book_append_sheet(wb,w2,"Reason per NP");
  return wb}
-$("outRsn").addEventListener("change",function(e){var t=e.target;if(!t.classList.contains("rcs"))return;var k=t.getAttribute("data-np");if(t.value)RCAT[k]=t.value;else delete RCAT[k];rcsave();renderReason()});
+$("outRsn").addEventListener("change",function(e){var t=e.target;if(!t.classList.contains("rcs"))return;var k=t.getAttribute("data-np");if(t.value)RCAT[k]=t.value;else delete RCAT[k];rcsave();renderReason();if(CLOUD&&EDIT)rpc("save_category",{p_np:k,p_cat:t.value}).then(function(){cst("● Online · kategori tersimpan","var(--ok)")}).catch(function(err){$("msg").style.color="";$("msg").textContent="Kategori belum tersimpan ke database online: "+err.message})});
 $("outRsn").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
  if(b.getAttribute("data-go")){TAB=b.getAttribute("data-go");try{localStorage.setItem("awt_tab",TAB)}catch(x){}tabUI();render();window.scrollTo(0,0);return}
  if(b.id==="rdl"){try{saveWB(rsnWB(),"Analisa_Reason_Late_"+($("f1").value||"")+"_"+($("f2").value||"")+".xlsx","Analisa Reason diunduh.")}catch(err){$("msg").style.color="";$("msg").textContent="Gagal membuat file: "+err.message}}});
-load();nload();var FIXD=sanitize();tabUI();setup();if(FIXD){$("msg").style.color="var(--ok)";$("msg").textContent="Tanggal pada "+FIXD+" data lama diperbaiki otomatis (format bulan/tanggal sebelumnya terbaca terbalik)."}
+// ===== Mode online (Supabase) =====
+// Aktif kalau SB_URL dan SB_KEY (di bagian paling atas script) sudah diisi.
+// Data dibaca dari database online; menulis (upload, Reason, kategori, hapus) wajib PIN dan dicek di server.
+var EDIT=false,PIN="",OPS=[],PENDR={},RT={},LASTSIG="",LASTLOAD=0,CBUSY=false,PIN_CB=null,PENDF=null;
+function sbH(x){var h={apikey:SB_KEY,"Content-Type":"application/json"};if(/^eyJ/.test(SB_KEY))h.Authorization="Bearer "+SB_KEY;for(var k in x)h[k]=x[k];return h}
+function sbErr(r){return r.text().then(function(t){var m=t;try{m=JSON.parse(t).message||t}catch(e){}var er=new Error(m||("HTTP "+r.status));er.status=r.status;throw er})}
+function sbBase(){return SB_URL.replace(/\/+$/,"")+"/rest/v1/"}
+var SBORD={awt_rows:"k",nota_np:"np",nota_late:"np",np_reason:"np",sites:"site_id",app_meta:"key"};
+function sbGet(t){var out=[],size=1000;function page(f){return fetch(sbBase()+t+"?select=*&order="+SBORD[t],{headers:sbH({"Range-Unit":"items",Range:f+"-"+(f+size-1)}),cache:"no-store"}).then(function(r){return r.ok?r.json():sbErr(r)}).then(function(a){out=out.concat(a);return a.length<size?out:page(f+size)})}return page(0)}
+function rpc(fn,args){args=Object.assign({p_pin:PIN},args||{});return fetch(sbBase()+"rpc/"+fn,{method:"POST",headers:sbH({}),body:JSON.stringify(args)}).then(function(r){return r.ok?r.text().then(function(t){try{return JSON.parse(t)}catch(e){return t}}):sbErr(r)})
+ .catch(function(err){if(/PIN salah/i.test(err.message)){setEdit(false,"");try{localStorage.removeItem("awt_pin");sessionStorage.removeItem("awt_pin")}catch(e){}}throw err})}
+function cst(t,c){var el=$("cst");if(el){el.textContent=t;el.style.color=c||""}}
+function applyCloud(x){
+ var meta={};x.meta.forEach(function(m){meta[m.key]=m.value});
+ SITES={};x.sites.forEach(function(s){SITES[s.site_id]=s.name||""});
+ D=mergeD([],x.awt.map(function(r){return[r.np_date,r.np_type,r.tinting,r.total,r.s_total,r.s_ontime,r.s_l10,r.s_l30,r.w_total,r.w_ontime,r.w_l10,r.w_l30,r.site]}));
+ META=Object.assign({site:"",rm:"",info:""},meta.awt||{});
+ NOTA={np:x.np.map(function(p){return[p.site,p.np_date,p.np_type,p.area,p.status,p.tinting,p.np]}),late:x.late.map(function(l){var d=l.data||{};d.np=l.np;if(!d.date)d.date=l.np_date;if(!d.items)d.items=[];return d}),sites:Object.assign({},SITES),info:(meta.nota&&meta.nota.info)||""};
+ REASON={};RCAT={};x.rs.forEach(function(r){if(r.reason)REASON[r.np]=r.reason;if(r.category)RCAT[r.np]=r.category});
+ Object.keys(PENDR).forEach(function(k){if(PENDR[k])REASON[k]=PENDR[k].v;else delete REASON[k]});
+}
+// Muat ulang dari server. force=true: selalu render; kalau tidak, render hanya bila data berubah.
+function cloudLoad(force,okMsg){if(CBUSY)return Promise.resolve();CBUSY=true;if(force)cst("● Memuat data…","var(--mut)");
+ return Promise.all(["awt_rows","nota_np","nota_late","np_reason","sites","app_meta"].map(sbGet)).then(function(a){
+  var x={awt:a[0],np:a[1],late:a[2],rs:a[3],sites:a[4],meta:a[5]},sig=JSON.stringify(x);LASTLOAD=Date.now();CBUSY=false;
+  cst("● Online · diperbarui "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}),"var(--ok)");
+  if(!force&&sig===LASTSIG)return;LASTSIG=sig;try{localStorage.setItem("awt_cloud",sig)}catch(e){}
+  applyCloud(x);refreshKeep();if(okMsg){$("msg").style.color="var(--ok)";$("msg").textContent=okMsg}
+ }).catch(function(err){CBUSY=false;cst("● Offline – menampilkan data terakhir yang tersimpan di komputer ini","var(--l30)");if(force){$("msg").style.color="";$("msg").textContent=/schema cache|does not exist|PGRST205|42P01/i.test(err.message)?"Database online belum disiapkan: tabel belum ada. Jalankan file setup_supabase.sql di Supabase (SQL Editor → New query → tempel → Run), lalu muat ulang halaman ini.":/Invalid API key|No API key|401/i.test(err.message+" "+(err.status||""))?"Publishable key tidak valid. Periksa baris SB_KEY di file HTML.":"Gagal memuat database online: "+err.message}})}
+// Setup ulang tampilan tanpa mereset filter yang sedang dipakai
+function refreshKeep(){var f1=$("f1").value,f2=$("f2").value,ft=$("ft").value,fs=$("fs").value,ti=TINT,pmin=$("f1").min,pmax=$("f2").max;
+ setup();if(!pmin&&!pmax)return;
+ // tanggal yang tidak diubah pengguna ikut rentang data terbaru; yang sudah diubah dipertahankan
+ if(f1&&isISO(f1)&&f1!==pmin)$("f1").value=f1;if(f2&&isISO(f2)&&f2!==pmax)$("f2").value=f2;
+ var has=function(sel,v){return[].some.call($(sel).options,function(o){return o.value===v})};
+ if(has("ft",ft))$("ft").value=ft;if(has("fs",fs))$("fs").value=fs;TINT=ti;segUI();render()}
+function flushOps(){var ops=OPS;OPS=[];if(!ops.length)return Promise.resolve(0);cst("● Menyimpan ke database online…","var(--mut)");
+ return ops.reduce(function(p,o){return p.then(function(){return rpc(o[0],o[1])})},Promise.resolve()).then(function(){return ops.length})}
+// Reason: disimpan otomatis 0,8 detik setelah berhenti mengetik
+function queueReason(k,v,el){PENDR[k]={v:v};clearTimeout(RT[k]);if(el)el.classList.remove("ok","er");
+ RT[k]=setTimeout(function(){rpc("save_reason",{p_np:k,p_reason:v}).then(function(){if(PENDR[k]&&PENDR[k].v===v)delete PENDR[k];var t=document.querySelector('textarea.rs[data-np="'+k+'"]');if(t){t.classList.add("ok");setTimeout(function(){t.classList.remove("ok")},1200)}cst("● Online · Reason tersimpan "+new Date().toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"}),"var(--ok)")})
+  .catch(function(err){var t=document.querySelector('textarea.rs[data-np="'+k+'"]');if(t)t.classList.add("er");$("msg").style.color="";$("msg").textContent="Reason NP "+k+" belum tersimpan ke database online: "+err.message})},800)}
+function RSATTR(){return CLOUD&&!EDIT?' readonly placeholder="🔒 Masukkan PIN untuk mengisi"':' placeholder="Tulis reason…"'}
+function setEdit(on,pin){EDIT=!!on;PIN=on?pin:"";updEditUI();if(CLOUD&&(TAB==="late"||TAB==="rsn"))render()}
+function updEditUI(){if(!CLOUD)return;var b=$("pinb");b.hidden=false;
+ b.innerHTML=EDIT?'<span class="dot" style="background:var(--ok)"></span>Mode edit · Keluar':'🔒 Masukkan PIN';b.title=EDIT?"Klik untuk keluar dari mode edit":"PIN diperlukan untuk upload data dan mengisi Reason";
+ $("da").hidden=!EDIT;$("rs").textContent="Muat ulang data";
+ $("dropd").innerHTML=EDIT?'Tarik file ke sini atau <u>klik untuk memilih</u>. Report AWT, Nota Penjualan, atau file Database (.xlsx), bisa beberapa file sekaligus. Data tersimpan ke database online.':'🔒 Perlu PIN. Klik di sini untuk memasukkan PIN, lalu tarik atau pilih file Report AWT, Nota Penjualan, atau Database.'}
+function askPin(msg,cb){PIN_CB=cb||null;$("pmsg").textContent=msg||"PIN diperlukan untuk upload data dan mengisi Reason.";$("perr").textContent="";$("pin").value="";$("pdlg").hidden=false;$("pin").focus()}
+function closePin(){$("pdlg").hidden=true;PIN_CB=null;PENDF=null}
+function tryPin(){var p=$("pin").value.trim();if(!p){$("perr").textContent="Isi PIN terlebih dahulu.";return}$("pok").disabled=true;$("perr").textContent="Memeriksa…";
+ rpc("check_pin",{p_pin:p}).then(function(ok){$("pok").disabled=false;if(ok!==true){$("perr").textContent="PIN salah.";$("pin").select();return}
+  try{sessionStorage.setItem("awt_pin",p);if($("prem").checked)localStorage.setItem("awt_pin",p);else localStorage.removeItem("awt_pin")}catch(e){}
+  var cb=PIN_CB;$("pdlg").hidden=true;PIN_CB=null;setEdit(true,p);$("msg").style.color="var(--ok)";$("msg").textContent="Mode edit aktif. Anda bisa upload data dan mengisi Reason.";if(cb)cb()})
+ .catch(function(err){$("pok").disabled=false;$("perr").textContent="Tidak bisa memeriksa PIN: "+err.message})}
+function cloudBoot(){
+ $("pinb").addEventListener("click",function(){if(EDIT){try{localStorage.removeItem("awt_pin");sessionStorage.removeItem("awt_pin")}catch(e){}setEdit(false,"");$("msg").style.color="var(--ok)";$("msg").textContent="Keluar dari mode edit. Sekarang mode lihat."}else askPin()});
+ $("pok").addEventListener("click",tryPin);$("pcn").addEventListener("click",closePin);
+ $("pin").addEventListener("keydown",function(e){if(e.key==="Enter")tryPin()});
+ $("pdlg").addEventListener("click",function(e){if(e.target===$("pdlg"))closePin()});
+ document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("pdlg").hidden)closePin()});
+ $("outLate").addEventListener("click",function(e){var t=e.target;if(t.classList&&t.classList.contains("rs")&&t.readOnly)askPin("Masukkan PIN untuk mengisi Reason.")});
+ // tampilkan data terakhir dari komputer ini dulu, lalu ambil yang terbaru dari server
+ D=[];NOTA={np:[],late:[],sites:{},info:""};REASON={};RCAT={};SITES={};META={site:"",rm:"",info:""};
+ try{var c=localStorage.getItem("awt_cloud");if(c){LASTSIG=c;applyCloud(JSON.parse(c))}}catch(e){}
+ updEditUI();setup();if(!D.length&&!NOTA.np.length)$("out").innerHTML='<div class="card empty">Memuat data dari database online…</div>';
+ var sp="";try{sp=sessionStorage.getItem("awt_pin")||localStorage.getItem("awt_pin")||""}catch(e){}
+ if(sp)rpc("check_pin",{p_pin:sp}).then(function(ok){if(ok===true)setEdit(true,sp);else{try{localStorage.removeItem("awt_pin");sessionStorage.removeItem("awt_pin")}catch(e){}}}).catch(function(){});
+ cloudLoad(true).then(function(){if(!D.length&&!NOTA.np.length){$("out").innerHTML='<div class="card empty">Database online masih kosong. Klik <b>🔒 Masukkan PIN</b>, lalu unggah Report AWT, Nota Penjualan, atau file Database lewat kotak <b>Upload database</b>.</div>'}});
+ // ambil data terbaru otomatis: tiap 60 detik saat halaman terbuka, dan saat kembali ke tab ini
+ var idle=function(){var a=document.activeElement;return document.visibilityState==="visible"&&$("pdlg").hidden&&$("dlg").hidden&&!(a&&(a.tagName==="TEXTAREA"||a.tagName==="SELECT"))&&!Object.keys(PENDR).length};
+ setInterval(function(){if(idle())cloudLoad(false)},60000);
+ document.addEventListener("visibilitychange",function(){if(idle()&&Date.now()-LASTLOAD>15000)cloudLoad(false)});
+ window.addEventListener("focus",function(){if(idle()&&Date.now()-LASTLOAD>15000)cloudLoad(false)});
+}
+if(CLOUD){tabUI();cloudBoot()}else{load();nload();var FIXD=sanitize();tabUI();setup();if(FIXD){$("msg").style.color="var(--ok)";$("msg").textContent="Tanggal pada "+FIXD+" data lama diperbaiki otomatis (format bulan/tanggal sebelumnya terbaca terbalik)."}}
+if(!CLOUD)[].forEach.call(document.querySelectorAll(".cloudonly"),function(n){n.remove()});
 </script>
 </body>
 </html>
