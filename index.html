@@ -122,6 +122,36 @@ select.rcs{font-size:12.5px;padding:5px 7px;max-width:220px}
 textarea.rs[readonly]{cursor:pointer;background:transparent}
 textarea.rs.ok{border-color:var(--ok);border-style:solid}
 textarea.rs.er{border-color:var(--l30);border-style:solid}
+.sm-wrap{display:flex;flex-direction:column;gap:14px}
+.sm-head{display:flex;flex-direction:column;gap:4px;align-items:center;text-align:center}
+.sm-title{margin:0;font-size:clamp(22px,3.4vw,30px);font-weight:800;letter-spacing:.06em;color:var(--brand)}
+.sm-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:8px}
+.sm-f{display:flex;flex-direction:column;gap:4px;background:var(--card);border:1px solid var(--line);border-top:3px solid var(--brand);border-radius:8px;padding:6px 8px;font-size:12px;font-weight:700;color:var(--brand)}
+.sm-f select{font:inherit;font-weight:500;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.sm-fv{font-weight:500;font-size:13px;color:var(--ink);padding:4px 2px}
+.sm-top{display:grid;grid-template-columns:minmax(0,520px) minmax(0,1fr);gap:14px;align-items:stretch}
+@media(max-width:900px){.sm-top{grid-template-columns:minmax(0,1fr)}}
+.sm-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.sm-tile{border-radius:10px;padding:16px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center}
+.sm-tile.ty{background:linear-gradient(135deg,#1d3a8a 0%,#2f6fed 100%);color:#fff}
+.sm-tile.ly{background:var(--card);border:1px solid var(--line);border-top:3px solid #7fb3f0;color:var(--ink)}
+.sm-tile b{font-size:clamp(22px,2.6vw,30px);font-weight:700}
+.sm-tile span{font-size:12.5px;opacity:.92}
+.sm-chart{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;background:var(--card)}
+.sm-chart-h{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;font-size:13px;color:var(--brand)}
+.sm-leg{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--mut)}.sm-leg i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.sm-tw{overflow:auto;border:1px solid var(--line);border-radius:10px}
+.sm-t{font-size:12.5px}
+.sm-t th{background:#1d3a8a;color:#fff;font-weight:700}
+.sm-t th.sm-grp{text-align:center;letter-spacing:.08em;font-size:13px}.sm-t th.sm-grp.ty{background:#16306f}.sm-t th.sm-grp.ly{background:#4a86d1}
+.sm-t th.sm-sub.ly{background:#5b95dc}.sm-t .sm-first{border-left:2px solid var(--line)}.sm-t th.sm-first{border-left-color:#fff}
+.sm-t th.sm-rs{vertical-align:middle}
+.sm-t tbody tr:nth-child(even) td{background:rgba(47,111,237,.05)}
+.sm-t td.sm-adj{color:var(--brand);font-weight:800}
+.sm-t td.sm-zero{color:var(--mut)}
+.sm-late th{white-space:normal;line-height:1.25;vertical-align:bottom;min-width:64px}.sm-late th:first-child{min-width:80px}
+.sm-t tfoot td{font-weight:800;border-top:2px solid var(--brand);background:rgba(47,111,237,.08)}
+.sm-sub-h{display:flex;flex-direction:column;gap:2px;margin-top:4px}.sm-h3{margin:0;font-size:16px;font-weight:800;color:var(--brand)}
 svg text{fill:var(--mut);font-size:11px;font-family:inherit}
 @media(max-width:700px){.hero,.two{grid-template-columns:1fr}.big{font-size:44px}}
 </style>
@@ -142,7 +172,7 @@ svg text{fill:var(--mut);font-size:11px;font-family:inherit}
 </section>
 <div id="msg"></div>
 <div id="vr"></div>
-<div class="tabs" id="tabs" role="tablist"><button type="button" data-t="awt" role="tab">Ringkasan AWT</button><button type="button" data-t="late" role="tab">Detail Late</button><button type="button" data-t="rsn" role="tab">Analisa Reason</button><button type="button" class="capb" id="capt" title="Unduh gambar PNG dari seluruh isi tab ini"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Capture gambar</button></div>
+<div class="tabs" id="tabs" role="tablist"><button type="button" data-t="sum" role="tab">Summary AWT</button><button type="button" data-t="awt" role="tab">Ringkasan AWT</button><button type="button" data-t="late" role="tab">Detail Late</button><button type="button" data-t="rsn" role="tab">Analisa Reason</button><button type="button" class="capb" id="capt" title="Unduh gambar PNG dari seluruh isi tab ini"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Capture gambar</button></div>
 <div class="filters">
  <label>Toko<select id="fs"></select></label>
  <label>Dari tanggal<input type="date" id="f1"></label>
@@ -150,6 +180,7 @@ svg text{fill:var(--mut);font-size:11px;font-family:inherit}
  <label>Tipe NP<select id="ft"></select></label>
  <div class="grp">Jenis barang<div class="seg" id="fn"><button type="button" data-v="">Semua</button><button type="button" data-v="YES">Tinting</button><button type="button" data-v="NO">Non Tinting</button></div></div>
 </div>
+<div id="outSum" hidden></div>
 <div id="out"></div>
 <div id="outLate" hidden></div>
 <div id="outRsn" hidden></div>
@@ -202,8 +233,8 @@ function setup(){
  render();
 }
 function render(emptyAWT){
- $("out").hidden=TAB!=="awt";$("outLate").hidden=TAB!=="late";$("outRsn").hidden=TAB!=="rsn";
- if(TAB==="late")renderLate();else if(TAB==="rsn")renderReason();else if(!emptyAWT){if(!D.length)$("out").innerHTML='<div class="card empty">Belum ada data Report AWT. Unggah lewat kotak <b>Upload database</b> di atas.</div>';else renderAWT()}
+ $("out").hidden=TAB!=="awt";$("outLate").hidden=TAB!=="late";$("outRsn").hidden=TAB!=="rsn";$("outSum").hidden=TAB!=="sum";
+ if(TAB==="sum")renderSum();else if(TAB==="late")renderLate();else if(TAB==="rsn")renderReason();else if(!emptyAWT){if(!D.length)$("out").innerHTML='<div class="card empty">Belum ada data Report AWT. Unggah lewat kotak <b>Upload database</b> di atas.</div>';else renderAWT()}
 }
 function renderAWT(){
  var a=$("f1").value,b=$("f2").value,t=$("ft").value,ti=TINT,st=$("fs").value;
@@ -463,7 +494,7 @@ var NOTA_DEF=/*NOTA_DEF*/{"np":[["10005","2026-11-01","Cash&Delivery via Gudang 
 var REASON={};try{REASON=JSON.parse(localStorage.getItem("awt_reason")||"{}")||{}}catch(e){}
 function rsave(){try{localStorage.setItem("awt_reason",JSON.stringify(REASON))}catch(e){}if(window.updDB)updDB()}
 var NOTA=JSON.parse(JSON.stringify(NOTA_DEF)),TAB="awt",LOPEN={};
-try{var tb0=localStorage.getItem("awt_tab");TAB=tb0==="late"||tb0==="rsn"?tb0:"awt"}catch(e){}
+TAB="sum";try{var tb0=localStorage.getItem("awt_tab");if(tb0==="late"||tb0==="rsn"||tb0==="awt"||tb0==="sum")TAB=tb0}catch(e){}
 function nsave(){try{localStorage.setItem("awt_nota",JSON.stringify(NOTA))}catch(e){}}
 function nload(){try{var s=JSON.parse(localStorage.getItem("awt_nota")||"null");if(s&&s.empty){NOTA={np:[],late:[],sites:{},info:""}}else if(s&&s.np){NOTA=nmerge(NOTA,s)}}catch(e){}}
 // Gabung data lama (A) + upload baru (B). NP Late yang sudah tercatat tidak pernah dihapus:
@@ -588,8 +619,8 @@ function capturePNG(el,fn,opt){opt=opt||{};if(!el)return;
 }
 function filterText(){var g=function(id){var s=$(id);return s&&s.selectedIndex>=0?s.options[s.selectedIndex].text:""};var a=$("f1").value,b=$("f2").value;
  return"Filter · Toko: "+g("fs")+" · Periode: "+(a?fd(a)+" "+a.slice(0,4):"-")+" – "+(b?fd(b)+" "+b.slice(0,4):"-")+" · Tipe NP: "+g("ft")+" · Jenis barang: "+(TINT==="YES"?"Tinting":TINT==="NO"?"Non Tinting":"Semua")+" · Dibuat "+new Date().toLocaleString("id-ID")}
-var TABNM={awt:"Ringkasan AWT",late:"Detail Late",rsn:"Analisa Reason"},TABEL={awt:"out",late:"outLate",rsn:"outRsn"};
-function captureTab(){capturePNG($(TABEL[TAB]),"Capture_"+TABNM[TAB].replace(/\s+/g,"_")+"_"+($("f1").value||"")+"_"+($("f2").value||"")+".png",{title:"Dashboard Report AWT · "+TABNM[TAB],filters:filterText(),width:TAB==="late"?1480:1320})}
+var TABNM={sum:"Summary AWT",awt:"Ringkasan AWT",late:"Detail Late",rsn:"Analisa Reason"},TABEL={sum:"outSum",awt:"out",late:"outLate",rsn:"outRsn"};
+function captureTab(){capturePNG($(TABEL[TAB]),"Capture_"+TABNM[TAB].replace(/\s+/g,"_")+"_"+(TAB==="sum"?(SM.year||"")+(SM.month?"_"+BULAN_FULL[+SM.month-1]:""):($("f1").value||"")+"_"+($("f2").value||""))+".png",{title:"Dashboard Report AWT · "+TABNM[TAB],filters:filterText(),width:TAB==="late"?1480:1320})}
 function snapPNG(){capturePNG($("lsnap"),"Daftar_NP_Late_"+($("f1").value||"")+"_"+($("f2").value||"")+".png",{width:1440})}
 function lateWB(){
  var ok=nf(),L=NOTA.late.filter(function(x){return ok(x.site,x.date,x.type,x.tint)}).sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:(b.min||0)-(a.min||0)});
@@ -859,6 +890,86 @@ function cloudBoot(){
  document.addEventListener("visibilitychange",function(){if(idle()&&Date.now()-LASTLOAD>15000)cloudLoad(false)});
  window.addEventListener("focus",function(){if(idle()&&Date.now()-LASTLOAD>15000)cloudLoad(false)});
 }
+// ===== Tab Summary AWT (format seperti Summary DSL / report Power BI) =====
+// TY = tahun terpilih (PERIODE), LY = tahun sebelumnya di bulan yang sama.
+// Mengikuti filter Toko, Tipe NP, dan Jenis barang di atas; filter Dari–Sampai tidak dipakai di tab ini.
+var SM={month:"",year:""};
+var BULAN_FULL=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+function smP(v){return v==null||isNaN(v)?"—":(v*100).toFixed(1).replace(".",",")+"%"}
+function smA(rs){var g=agg(rs);return{all:g.t,on:g.on,l10:g.l10,l30:g.l30,late:g.l10+g.l30,ach:g.t?g.on/g.t:null,sT:g.sT,sAch:g.sT?g.sO/g.sT:null,wT:g.wT,wAch:g.wT?g.wO/g.wT:null}}
+function smOk(site,type,tint){var st=$("fs").value,t=$("ft").value;return(!st||site===st)&&(!t||type===t)&&(!TINT||tint===TINT)}
+function renderSum(){
+ var el=$("outSum");
+ if(!D.length&&!NOTA.np.length){el.innerHTML='<div class="card empty">Belum ada data. Unggah Report AWT lewat kotak <b>Upload database</b> di atas.</div>';return}
+ var base=D.filter(function(r){return smOk(r[12],r[1],r[2])});
+ var years=[];D.concat([]).forEach(function(r){var y=r[0].slice(0,4);if(years.indexOf(y)<0)years.push(y)});NOTA.late.forEach(function(x){var y=x.date.slice(0,4);if(years.indexOf(y)<0)years.push(y)});years.sort();
+ if(years.indexOf(SM.year)<0)SM.year=years[years.length-1]||"";
+ var yr=SM.year,ly=yr?String(+yr-1):"";
+ var mo=function(s){return +s.slice(5,7)};
+ var months=[];D.forEach(function(r){var y=r[0].slice(0,4);if(y===yr||y===ly){var m=mo(r[0]);if(months.indexOf(m)<0)months.push(m)}});months.sort(function(a,b){return a-b});
+ if(SM.month&&months.indexOf(+SM.month)<0)SM.month="";
+ var inY=function(d,y){return d.slice(0,4)===y&&(!SM.month||mo(d)===+SM.month)};
+ var TY=base.filter(function(r){return inY(r[0],yr)}),LY=base.filter(function(r){return inY(r[0],ly)});
+ var aT=smA(TY),aL=smA(LY);
+ var h='<div class="card sm-wrap"><div class="sm-head"><h2 class="sm-title">SUMMARY AWT</h2>'
+  +'<p class="lbl" style="margin:0">Satuan: NP. TY = tahun terpilih (PERIODE), LY = tahun sebelumnya di bulan yang sama. Filter Toko, Tipe NP, dan Jenis barang di atas ikut berlaku; filter Dari–Sampai tidak dipakai di tab ini.</p></div>'
+  +'<div class="sm-filters"><label class="sm-f"><span>MONTH</span><select id="sm-month"><option value="">Semua</option>'+months.map(function(m){return'<option value="'+m+'"'+(String(m)===String(SM.month)?" selected":"")+'>'+BULAN_FULL[m-1]+'</option>'}).join("")+'</select></label>'
+  +'<label class="sm-f"><span>TOKO</span><b class="sm-fv">'+esc($("fs").selectedIndex>0?$("fs").options[$("fs").selectedIndex].text:"Semua")+'</b></label>'
+  +'<label class="sm-f"><span>TIPE NP · JENIS</span><b class="sm-fv">'+esc(($("ft").value?short($("ft").value):"Semua")+" · "+(TINT==="YES"?"Tinting":TINT==="NO"?"Non Tinting":"Semua"))+'</b></label>'
+  +'<label class="sm-f"><span>PERIODE</span><select id="sm-year">'+years.map(function(y){return'<option value="'+y+'"'+(y===yr?" selected":"")+'>'+y+'</option>'}).join("")+'</select></label></div>';
+ // tiles + grafik
+ var tile=function(v,l,cls){return'<div class="sm-tile '+cls+'"><b>'+smP(v)+'</b><span>'+l+'</span></div>'};
+ h+='<div class="sm-top"><div class="sm-tiles">'
+  +tile(aT.ach,"Ach TY","ty")+tile(aT.sAch,"Ach Selling Area TY","ty")+tile(aT.wAch,"Ach WH Area TY","ty")
+  +tile(aL.ach,"Ach LY","ly")+tile(aL.sAch,"Ach Selling Area LY","ly")+tile(aL.wAch,"Ach WH Area LY","ly")
+  +'</div><div class="sm-chart"><div class="sm-chart-h"><b>Ach LY dan Ach TY oleh MONTH</b><span class="sm-leg"><i style="background:#7fb3f0"></i>Ach LY <i style="background:var(--brand)"></i>Ach TY</span></div><div id="sm-line"></div></div></div>';
+ // tabel per bulan TY/LY
+ var mkeys=[];TY.concat(LY).forEach(function(r){var m=mo(r[0]);if(mkeys.indexOf(m)<0)mkeys.push(m)});mkeys.sort(function(a,b){return a-b});
+ var cols=[["all","ALL NP"],["on","Tepat waktu"],["l10","Late >10"],["l30","Late >30"],["ach","Ach"],["sAch","Ach Selling"],["wAch","Ach WH"]];
+ var cell=function(k,v,first){var pc2=k==="ach"||k==="sAch"||k==="wAch";return'<td class="'+(k==="ach"?"sm-adj ":"")+(first?"sm-first":"")+'">'+(v==null?"—":pc2?smP(v):(k==="all"&&!v?"—":n(v)))+'</td>'};
+ var line=function(lbl,t,l,foot){return'<tr><td class="l">'+lbl+'</td>'+cols.map(function(c,i){return cell(c[0],t.all?t[c[0]]:null,i===0)}).join("")+cols.map(function(c,i){return cell(c[0],l.all?l[c[0]]:null,i===0)}).join("")+'</tr>'};
+ var body=mkeys.map(function(m){return line(BULAN_FULL[m-1],smA(TY.filter(function(r){return mo(r[0])===m})),smA(LY.filter(function(r){return mo(r[0])===m})))}).join("");
+ h+='<div class="sm-tw"><table class="sm-t"><thead><tr><th rowspan="2" class="l sm-rs">Bulan</th><th colspan="'+cols.length+'" class="sm-grp ty">TY '+esc(yr)+'</th><th colspan="'+cols.length+'" class="sm-grp ly">LY '+esc(ly)+'</th></tr><tr>'
+  +cols.map(function(c,i){return'<th class="sm-sub'+(i===0?" sm-first":"")+'">'+c[1]+'</th>'}).join("")+cols.map(function(c,i){return'<th class="sm-sub ly'+(i===0?" sm-first":"")+'">'+c[1]+'</th>'}).join("")
+  +'</tr></thead><tbody>'+(body||'<tr><td colspan="'+(1+2*cols.length)+'" class="l" style="color:var(--mut)">Tidak ada data Report AWT pada filter ini.</td></tr>')+'</tbody><tfoot>'+line("Total",aT,aL)+'</tfoot></table></div>';
+ // Summary Late per kategori Reason (dari Nota Penjualan + Reason)
+ var LT=NOTA.late.filter(function(x){return smOk(x.site,x.type,x.tint)&&inY(x.date,yr)});
+ var cats=RCATS.map(function(c){return c[0]}).concat([RLAIN[0]]),has={};
+ LT.forEach(function(x){var c=catOf(x.np)||"Belum diisi";has[c]=1});
+ var showCats=cats.filter(function(c){return true}).concat(has["Belum diisi"]?["Belum diisi"]:[]);
+ var byM={},tot={};showCats.forEach(function(c){tot[c]=0});var t10=0,t30=0;
+ LT.forEach(function(x){var m=mo(x.date),c=catOf(x.np)||"Belum diisi";if(!byM[m]){byM[m]={_10:0,_30:0};showCats.forEach(function(k){byM[m][k]=0})}byM[m][c]++;tot[c]++;if(x.st==="L30"){byM[m]._30++;t30++}else{byM[m]._10++;t10++}});
+ var lm=Object.keys(byM).map(Number).sort(function(a,b){return a-b});
+ var lrow=function(lbl,r,a,b){var s=0;return'<tr><td class="l">'+lbl+'</td>'+showCats.map(function(c){s+=r[c];return'<td class="'+(r[c]?"":"sm-zero")+'">'+(r[c]?n(r[c]):"–")+'</td>'}).join("")+'<td>'+n(a)+'</td><td>'+n(b)+'</td><td><b>'+n(s)+'</b></td></tr>'};
+ h+='<div class="sm-sub-h"><h3 class="sm-h3">Summary Late</h3><p class="lbl" style="margin:0">Jumlah NP Late TY per bulan, dipecah per kategori Reason (diisi di tab Detail Late, dikelompokkan di tab Analisa Reason). Sumber: Nota Penjualan. Mengikuti filter MONTH, PERIODE, Toko, Tipe NP, dan Jenis barang.</p></div>'
+  +'<div class="sm-tw"><table class="sm-t sm-late"><thead><tr><th class="l">Bulan</th>'+showCats.map(function(c){return'<th><span class="dot" style="background:'+(c==="Belum diisi"?"#d0d5dd":ccol(c))+';margin-right:5px"></span>'+esc(c)+'</th>'}).join("")+'<th>Late &gt;10</th><th>Late &gt;30</th><th>Total Late</th></tr></thead><tbody>'
+  +(lm.length?lm.map(function(m){return lrow(BULAN_FULL[m-1],byM[m],byM[m]._10,byM[m]._30)}).join(""):'<tr><td colspan="'+(showCats.length+4)+'" class="l" style="color:var(--mut)">Tidak ada NP Late pada filter ini.</td></tr>')
+  +'</tbody><tfoot>'+lrow("Total",tot,t10,t30)+'</tfoot></table></div>'
+  +'<p class="lbl" style="margin:0">Definisi: <b>Ach</b> = NP tepat waktu ÷ ALL NP · <b>Ach Selling / WH</b> = tepat waktu ÷ NP di area tersebut · <b>Late</b> = NP Late &gt;10 menit + Late &gt;30 menit (Report AWT). Summary Late memakai NP Late dari Nota Penjualan.</p></div>';
+ el.innerHTML=h;
+ // grafik garis Ach per bulan
+ var box=$("sm-line"),mT={},mL={};
+ base.forEach(function(r){var y=r[0].slice(0,4),m=mo(r[0]);if(y===yr)(mT[m]=mT[m]||[]).push(r);else if(y===ly)(mL[m]=mL[m]||[]).push(r)});
+ var ms=Object.keys(mT).concat(Object.keys(mL)).map(Number).filter(function(v,i,a){return a.indexOf(v)===i}).sort(function(a,b){return a-b});
+ if(!ms.length){box.innerHTML='<div class="lbl" style="padding:20px 0">Belum ada data.</div>';return}
+ var W=Math.max(300,box.clientWidth||600),H=210,M={t:20,r:60,b:30,l:44},IN=26;
+ var pts=function(mm){return ms.filter(function(k){return mm[k]}).map(function(k){return{k:k,v:smA(mm[k]).ach}})},pT=pts(mT),pL=pts(mL);
+ var vals=pT.concat(pL).map(function(p){return p.v}).filter(function(v){return v!=null});
+ var lo=Math.min.apply(null,vals),hi=Math.max.apply(null,vals);if(hi-lo<0.04){lo-=0.02;hi+=0.02}
+ var step=(hi-lo)>0.12?0.05:0.02;lo=Math.max(0,Math.floor(lo/step)*step);hi=Math.min(1,Math.ceil(hi/step)*step);if(hi<=lo)hi=lo+step;
+ var X=function(k){return ms.length===1?(M.l+W-M.r)/2:M.l+IN+(W-M.l-M.r-2*IN)*(ms.indexOf(k)/(ms.length-1))},Y=function(v){return M.t+(H-M.t-M.b)*(1-(v-lo)/(hi-lo))};
+ var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Ach LY dan Ach TY per bulan">';
+ for(var v=lo;v<=hi+1e-9;v+=step){s+='<line x1="'+M.l+'" x2="'+(W-M.r)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" style="stroke:var(--line)"/><text x="'+(M.l-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="10.5" style="fill:var(--mut)">'+Math.round(v*100)+'%</text>'}
+ ms.forEach(function(k){s+='<text x="'+X(k)+'" y="'+(H-10)+'" text-anchor="middle" font-size="10.5" style="fill:var(--mut)">'+MON[k-1]+'</text>'});
+ var lAbove=pL.length&&pT.length?pL[pL.length-1].v>=pT[pT.length-1].v:true;
+ var draw=function(p,c,name,above){if(!p.length)return;s+='<polyline points="'+p.map(function(q){return X(q.k)+","+Y(q.v)}).join(" ")+'" fill="none" style="stroke:'+c+'" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+  p.forEach(function(q){s+='<circle cx="'+X(q.k)+'" cy="'+Y(q.v)+'" r="3.4" style="fill:'+c+'"/><text x="'+X(q.k)+'" y="'+(Y(q.v)+(above?-8:15))+'" text-anchor="middle" font-size="10.5" font-weight="600" style="fill:var(--ink)">'+smP(q.v)+'</text>'});
+  var last=p[p.length-1];s+='<text x="'+(X(last.k)+10)+'" y="'+(Y(last.v)+4)+'" font-size="10.5" font-weight="700" style="fill:'+c+'">'+name+'</text>'};
+ draw(pL,"#7fb3f0","Ach LY",lAbove);draw(pT,"var(--brand)","Ach TY",!lAbove);
+ box.innerHTML=s+'</svg>'+(pL.length?"":'<div class="lbl" style="margin:0">Belum ada data tahun '+esc(ly||"sebelumnya")+' (LY), jadi garis Ach LY belum tampil.</div>');
+}
+$("outSum").addEventListener("change",function(e){if(e.target.id==="sm-month"){SM.month=e.target.value;renderSum()}else if(e.target.id==="sm-year"){SM.year=e.target.value;SM.month="";renderSum()}});
+window.addEventListener("resize",function(){if(TAB==="sum"&&!$("outSum").hidden){clearTimeout(window.__smr);window.__smr=setTimeout(renderSum,150)}});
 if(CLOUD){tabUI();cloudBoot()}else{load();nload();var FIXD=sanitize();tabUI();setup();if(FIXD){$("msg").style.color="var(--ok)";$("msg").textContent="Tanggal pada "+FIXD+" data lama diperbaiki otomatis (format bulan/tanggal sebelumnya terbaca terbalik)."}}
 if(!CLOUD)[].forEach.call(document.querySelectorAll(".cloudonly"),function(n){n.remove()});
 </script>
